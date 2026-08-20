@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "spectrograph-pipeline"
+version = "0.1.0"
+description = "CLI reduction and extraction pipeline for a fiber-fed spectrograph"
+requires-python = ">=3.11"
+dependencies = [
+    "astropy>=7",
+    "numpy>=1.26",
+    "specreduce>=1.9",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[project.scripts]
+spectrograph-pipeline = "spectrograph_pipeline.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
