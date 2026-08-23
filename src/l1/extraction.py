@@ -1,4 +1,4 @@
-"""Optimal extraction operations."""
+"""Optimal extraction operations for L1 products."""
 
 from collections.abc import Sequence
 
@@ -9,19 +9,20 @@ from specreduce.extract import HorneExtract
 from specreduce.tracing import FlatTrace
 
 
-def optimal_extract_fibers(
+def optimal_extract_traces(
     data: np.ndarray,
     variance: np.ndarray,
     centers: Sequence[float],
     half_width: int,
     mask: np.ndarray | None = None,
+    unit: u.UnitBase = u.adu,
 ):
-    """Horne-extract flat fiber traces from independent local cutouts.
+    """Horne-extract flat traces from independent local cutouts.
 
     The image is assumed to have dispersion along axis 1 and cross-dispersion
-    along axis 0. The input data are interpreted as ADU and ``variance`` as
-    ADU^2. Background subtraction is assumed to have been performed upstream;
-    the fitted Horne spatial profile is therefore a pure Gaussian.
+    along axis 0. Background subtraction is assumed to have been performed
+    upstream or to be negligible; the fitted Horne spatial profile therefore
+    uses a fixed zero background term.
     """
     data = np.asarray(data, dtype=float)
     variance = np.asarray(variance, dtype=float)
@@ -65,7 +66,7 @@ def optimal_extract_fibers(
             trace,
             variance=variance_cutout,
             mask=mask_cutout,
-            unit=u.adu,
+            unit=unit,
             disp_axis=1,
             crossdisp_axis=0,
             spatial_profile="gaussian",
@@ -74,3 +75,7 @@ def optimal_extract_fibers(
         spectra.append(extraction.spectrum)
 
     return spectra
+
+
+# Backward-compatible name from the initial scaffold.
+optimal_extract_fibers = optimal_extract_traces
