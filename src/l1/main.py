@@ -7,6 +7,7 @@ from astropy import units as u
 from astropy.nddata import CCDData, VarianceUncertainty
 
 from .utils import ensure_variance
+from .cosmic import apply_cosmicray_correction
 from .extraction import optimal_extract_traces
 
 
