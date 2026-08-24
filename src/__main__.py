@@ -7,7 +7,6 @@ import numpy as np
 from astropy.nddata import CCDData
 
 from l1.io import write_l1_fits
-from l1.utils import infer_half_width
 from l1 import process_l1
 from l2 import process_l2
 
@@ -168,11 +167,10 @@ def _run_l1(args: argparse.Namespace) -> None:
     dark = _read_optional_master(args.dark, args.cal_data_ext, ccd.unit)
     flat = _read_optional_master(args.flat, args.cal_data_ext, ccd.unit)
 
-    half_width = args.half_width if args.half_width is not None else infer_half_width(centers)
     spectra = process_l1(
         ccd,
         centers,
-        half_width=half_width,
+        half_width=args.half_width,
         gain=args.gain,
         read_noise=args.read_noise,
         bias=bias,
