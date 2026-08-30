@@ -8,7 +8,7 @@ from astropy.nddata import CCDData, VarianceUncertainty
 
 from .utils import ensure_variance, infer_half_width
 from .cosmic import apply_cosmicray_correction
-from .extraction import optimal_extract_traces
+from .extraction import boxcar_extract_traces, optimal_extract_traces
 
 
 def apply_l1_corrections(
@@ -87,7 +87,7 @@ def process_l1(
 
     variance = ccd.uncertainty.represent_as(VarianceUncertainty).array
     hw = half_width or infer_half_width(centers)
-    return optimal_extract_traces(
+    return boxcar_extract_traces(
         ccd.data,
         variance,
         centers,
