@@ -66,12 +66,15 @@ A future L2 table can retain `PIXEL` for provenance while adding a physical
 python -m pip install -e .
 ```
 
+The installed import namespace is `pipeline`, and installation provides the
+`spectrograph-pipeline` command.
+
 ## L1 usage
 
 With no detector corrections:
 
 ```bash
-python pipeline l1 science_l0.fits science_l1.fits \
+spectrograph-pipeline l1 science_l0.fits science_l1.fits \
     --center 1023.5 \
     --spacing 50
 ```
@@ -79,7 +82,7 @@ python pipeline l1 science_l0.fits science_l1.fits \
 With explicit trace centers and detector calibration frames:
 
 ```bash
-python pipeline l1 science_l0.fits science_l1.fits \
+spectrograph-pipeline l1 science_l0.fits science_l1.fits \
     --bias master_bias.fits \
     --dark master_dark.fits \
     --dark-scale \
@@ -90,7 +93,7 @@ python pipeline l1 science_l0.fits science_l1.fits \
 A provisional variance model can be initialized from gain and read noise:
 
 ```bash
-python pipeline l1 science_l0.fits science_l1.fits \
+spectrograph-pipeline l1 science_l0.fits science_l1.fits \
     --center 512.0 \
     --spacing 25.7 \
     --gain 1.2 \
@@ -100,5 +103,5 @@ python pipeline l1 science_l0.fits science_l1.fits \
 In the future, the L2 interface will be called as:
 
 ```bash
-python pipeline l2 science_l1.fits science_l2.fits
+spectrograph-pipeline l2 science_l1.fits science_l2.fits
 ```

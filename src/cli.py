@@ -6,9 +6,9 @@ from pathlib import Path
 import numpy as np
 from astropy.nddata import CCDData
 
-from l1.io import write_l1_fits
-from l1 import process_l1
-from l2 import process_l2
+from .l1.io import write_l1_fits
+from .l1 import process_l1
+from .l2 import process_l2
 
 
 def _extension(value: str) -> str | int:
@@ -138,7 +138,7 @@ def _get_centers(args: argparse.Namespace):
         if args.center is not None or args.spacing is not None:
             raise ValueError("use either --centers or --center/--spacing, not both")
         try:
-            centers = np.asarray(map(float, args.centers.split(",")), dtype=float)
+            centers = np.fromiter((float(value) for value in args.centers.split(",")), dtype=float)
         except ValueError as exc:
             raise ValueError("trace centers must be comma-separated numbers") from exc
 
