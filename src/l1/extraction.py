@@ -5,7 +5,7 @@ from collections.abc import Sequence
 import numpy as np
 from astropy import units as u
 from astropy.modeling import models
-from astropy.nddata import CCDData
+from astropy.nddata import CCDData, VarianceUncertainty
 from specreduce.extract import BoxcarExtract, HorneExtract
 from specreduce.tracing import ArrayTrace, FitTrace, FlatTrace
 
@@ -53,7 +53,8 @@ def boxcar_extract_traces(
                 f"half-width {half_width}"
             )
 
-        trace_img = CCDData(cutout, unit=unit, mask=mask_cutout)
+        trace_img = CCDData(cutout, unit=unit, mask=mask_cutout,
+                            uncertainty=VarianceUncertainty(variance_cutout))
         trace = FitTrace(trace_img,
                          window=None,
                          bins=10, guess=local_center,
