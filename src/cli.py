@@ -78,6 +78,7 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     l1.add_argument(
         "--unit",
+        default="adu",
         help="Science-image unit if BUNIT is absent or should be overridden",
     )
 
