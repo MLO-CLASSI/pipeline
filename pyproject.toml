@@ -3,9 +3,9 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "spectrograph-pipeline"
+name = "classi-pipeline"
 version = "0.1.0"
-description = "Reduction pipeline for the MLO spectrograph"
+description = "Reduction pipeline for the MLO CLASSI spectrograph"
 authors = [
     {name = "Caden Gobat", email = "cgobat@sdsu.edu"},
 ]
@@ -19,7 +19,7 @@ dependencies = [
 ]
 
 [project.scripts]
-spectrograph-pipeline = "pipeline.cli:main"
+classi-pipeline = "pipeline.cli:main"
 
 [tool.setuptools]
 packages = ["pipeline", "pipeline.l1", "pipeline.l2"]

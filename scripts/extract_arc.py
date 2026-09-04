@@ -1,5 +1,5 @@
 """
-First pass extraction of an MLO fiber-fed spectrograph arc lamp exposure.
+First pass extraction of a CLASSI spectrograph arc lamp exposure.
 
 Reads instrument metadata straight from the FITS header (populated by the
 Flask ICS), traces the fiber's near field image with a FlatTrace (the trace

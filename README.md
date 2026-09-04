@@ -1,4 +1,4 @@
-# Spectrograph pipeline
+# CLASSI Spectrograph pipeline
 
 ## Data levels
 
@@ -67,14 +67,14 @@ python -m pip install -e .
 ```
 
 The installed import namespace is `pipeline`, and installation provides the
-`spectrograph-pipeline` command.
+`classi-pipeline` command.
 
 ## L1 usage
 
 With no detector corrections:
 
 ```bash
-spectrograph-pipeline l1 science_l0.fits science_l1.fits \
+classi-pipeline l1 science_l0.fits science_l1.fits \
     --center 1023.5 \
     --spacing 50
 ```
@@ -82,7 +82,7 @@ spectrograph-pipeline l1 science_l0.fits science_l1.fits \
 With explicit trace centers and detector calibration frames:
 
 ```bash
-spectrograph-pipeline l1 science_l0.fits science_l1.fits \
+classi-pipeline l1 science_l0.fits science_l1.fits \
     --bias master_bias.fits \
     --dark master_dark.fits \
     --dark-scale \
@@ -93,7 +93,7 @@ spectrograph-pipeline l1 science_l0.fits science_l1.fits \
 A provisional variance model can be initialized from gain and read noise:
 
 ```bash
-spectrograph-pipeline l1 science_l0.fits science_l1.fits \
+classi-pipeline l1 science_l0.fits science_l1.fits \
     --center 512.0 \
     --spacing 25.7 \
     --gain 1.2 \
@@ -103,5 +103,5 @@ spectrograph-pipeline l1 science_l0.fits science_l1.fits \
 In the future, the L2 interface will be called as:
 
 ```bash
-spectrograph-pipeline l2 science_l1.fits science_l2.fits
+classi-pipeline l2 science_l1.fits science_l2.fits
 ```

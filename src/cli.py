@@ -1,4 +1,4 @@
-"""Command-line interface for the spectrograph pipeline."""
+"""Command-line interface for the CLASSI spectrograph pipeline."""
 
 import argparse
 from pathlib import Path
@@ -51,7 +51,7 @@ def _add_geometry_arguments(parser: argparse.ArgumentParser) -> None:
 
 
 def _build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="spectrograph-pipeline")
+    parser = argparse.ArgumentParser(prog="classi-pipeline")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     l1 = subparsers.add_parser(
