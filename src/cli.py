@@ -56,7 +56,7 @@ def _build_parser() -> argparse.ArgumentParser:
 
     l1 = subparsers.add_parser(
         "l1",
-        help="L0 FITS -> detector-corrected, optimally extracted L1 spectra",
+        help='Process L0 ("raw") images into detector-corrected, 1D extracted L1 spectra',
     )
     l1.add_argument("input", type=Path, help="Input L0 FITS image")
     l1.add_argument("output", type=Path, help="Output L1 FITS product")
@@ -125,7 +125,7 @@ def _build_parser() -> argparse.ArgumentParser:
 
     l2 = subparsers.add_parser(
         "l2",
-        help="L1 spectra -> wavelength/spectrophotometrically calibrated L2 spectra",
+        help="Process L1 spectra into wavelength- & flux-calibrated L2 spectra",
     )
     l2.add_argument("input", type=Path, help="Input L1 FITS product")
     l2.add_argument("output", type=Path, help="Output L2 FITS product")
