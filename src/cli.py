@@ -5,6 +5,7 @@ from pathlib import Path
 
 import numpy as np
 import matplotlib.pyplot as plt
+from astropy.io import fits
 from astropy.nddata import CCDData
 
 from .l1.io import write_l1_fits
@@ -122,6 +123,12 @@ def _build_parser() -> argparse.ArgumentParser:
         type=float,
         help="Read noise in e- when no variance extension is supplied",
     )
+    l1.add_argument(
+        "--rebin",
+        type=int,
+        default=1,
+        help="Sum groups of N adjacent dispersion pixels in the L1 output (default: 1)",
+    )
     l1.add_argument("--plot", action="store_true",
                     help="Generate a quicklook plot as well")
     l1.add_argument("--overwrite", action="store_true",
@@ -195,11 +202,13 @@ def _run_l1(args: argparse.Namespace) -> None:
         dark_path=args.dark,
         flat_path=args.flat,
         dark_scaled=args.dark_scale,
+        rebin=args.rebin,
         overwrite=args.overwrite,
     )
     if args.plot:
-        for spectrum in spectra:
-            plt.plot(spectrum.flux.value, lw=0.7)
+        with fits.open(args.output) as hdul:
+            for hdu in hdul[1:]:
+                plt.plot(hdu.data["PIXEL"], hdu.data["COUNTS"], lw=0.7)
         plt.gca().invert_xaxis()
         plt.xlabel("Pixel coordinate")
         plt.ylabel("Counts")

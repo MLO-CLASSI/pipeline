@@ -19,15 +19,20 @@ def write_l1_fits(
     dark_path: str | Path | None = None,
     flat_path: str | Path | None = None,
     dark_scaled: bool = False,
+    rebin: int = 1,
     overwrite: bool = False,
 ) -> None:
     """Write an L1 product with one pixel-coordinate table per trace."""
+    if rebin < 1:
+        raise ValueError("rebin must be a positive integer")
+
     primary_header = source_header.copy()
     primary_header["PROCLVL"] = (1, "Pipeline processing level")
     primary_header["PROCTYPE"] = ("L1", "Pipeline product type")
     primary_header["NTRACE"] = (len(spectra), "Number of extracted traces")
     primary_header["EXTRACT"] = ("HORNE", "Extraction algorithm")
     primary_header["PIXORIG"] = (0, "Origin of PIXEL coordinates")
+    primary_header["REBIN"] = (rebin, "Native dispersion pixels per output bin")
     primary_header["BIASCOR"] = (bias_path is not None, "Bias correction applied")
     primary_header["DARKCOR"] = (dark_path is not None, "Dark correction applied")
     primary_header["FLATCOR"] = (flat_path is not None, "Flat correction applied")
@@ -51,13 +56,29 @@ def write_l1_fits(
     ):
         counts = np.asarray(spectrum.flux.value, dtype=float)
         sigma = np.asarray(spectrum.uncertainty.represent_as(StdDevUncertainty).array, dtype=float)
-        pixel = np.arange(counts.size, dtype=np.int32)
+        pixel = np.arange(counts.size, dtype=float)
         mask = spectrum.mask
         if mask is None:
             mask = np.zeros(counts.size, dtype=bool)
         else:
             mask = np.asarray(mask, dtype=bool)
         mask |= ~np.isfinite(counts) | ~np.isfinite(sigma)
+
+        n_trimmed = counts.size % rebin
+        n_used = counts.size - n_trimmed
+        if n_used == 0:
+            raise ValueError(
+                f"rebin factor {rebin} exceeds spectrum length {counts.size}"
+            )
+        if rebin > 1:
+            shape = (-1, rebin)
+            pixel = pixel[:n_used].reshape(shape).mean(axis=1)
+            valid = ~mask[:n_used]
+            counts = np.where(valid, counts[:n_used], 0.0).reshape(shape).sum(axis=1)
+            sigma = np.sqrt(
+                np.where(valid, sigma[:n_used] ** 2, 0.0).reshape(shape).sum(axis=1)
+            )
+            mask = mask[:n_used].reshape(shape).any(axis=1)
 
         table = Table()
         table["PIXEL"] = pixel
@@ -71,8 +92,10 @@ def write_l1_fits(
         hdu.header["PROCLVL"] = 1
         hdu.header["TRACEID"] = trace_id
         hdu.header["PIXORIG"] = (0, "Origin of PIXEL coordinates")
+        hdu.header["REBIN"] = (rebin, "Native dispersion pixels per output bin")
+        hdu.header["NTRIM"] = (n_trimmed, "Trailing native pixels omitted by rebinning")
         hdu.header["TRACECEN"] = (float(center), "Flat trace center [pixel]")
-        hdu.header["EXTRACT"] = "HORNE"
+        hdu.header["EXTRACT"] = "BOXCAR"
         hdu.header["WAVECAL"] = False
         hdu.header["FLUXCAL"] = False
         hdus.append(hdu)
