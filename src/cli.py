@@ -4,6 +4,7 @@ import argparse
 from pathlib import Path
 
 import numpy as np
+import matplotlib.pyplot as plt
 from astropy.nddata import CCDData
 
 from .l1.io import write_l1_fits
@@ -121,7 +122,10 @@ def _build_parser() -> argparse.ArgumentParser:
         type=float,
         help="Read noise in e- when no variance extension is supplied",
     )
-    l1.add_argument("--overwrite", action="store_true")
+    l1.add_argument("--plot", action="store_true",
+                    help="Generate a quicklook plot as well")
+    l1.add_argument("--overwrite", action="store_true",
+                    help="Overwrite existing output file path")
 
     l2 = subparsers.add_parser(
         "l2",
@@ -193,6 +197,14 @@ def _run_l1(args: argparse.Namespace) -> None:
         dark_scaled=args.dark_scale,
         overwrite=args.overwrite,
     )
+    if args.plot:
+        for spectrum in spectra:
+            plt.plot(spectrum.flux.value, lw=0.7)
+        plt.gca().invert_xaxis()
+        plt.xlabel("Pixel coordinate")
+        plt.ylabel("Counts")
+        plt.savefig(args.output.with_suffix(".png"), dpi=300, bbox_inches="tight")
+        plt.close()
 
 
 def _run_l2(args: argparse.Namespace) -> None:
