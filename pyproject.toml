@@ -18,9 +18,18 @@ dependencies = [
     "specreduce",
 ]
 
+[project.optional-dependencies]
+test = [
+    "matplotlib",
+    "pytest>=8",
+]
+
 [project.scripts]
 classi-pipeline = "pipeline.cli:main"
 
 [tool.setuptools]
 packages = ["pipeline", "pipeline.l1", "pipeline.l2"]
 package-dir = {pipeline = "src"}
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
