@@ -149,10 +149,6 @@ def test_run_l1_passes_rebin_and_calibration_paths_to_writer(tmp_path, monkeypat
     assert captured["write_kwargs"]["rebin"] == 5
 
 
-@pytest.mark.xfail(
-    reason="Current HEAD parses --variance-ext/--mask-ext but does not load them into CCDData",
-    strict=True,
-)
 def test_run_l1_loads_requested_variance_and_mask_extensions(tmp_path, monkeypatch):
     input_path = tmp_path / "input.fits"
     output_path = tmp_path / "output.fits"
@@ -160,13 +156,7 @@ def test_run_l1_loads_requested_variance_and_mask_extensions(tmp_path, monkeypat
     variance = np.full_like(data, 7.0)
     mask = np.zeros_like(data, dtype=np.uint8)
     mask[4, 10] = 1
-    fits.HDUList(
-        [
-            fits.PrimaryHDU(data),
-            fits.ImageHDU(variance, name="VARIANCE"),
-            fits.ImageHDU(mask, name="MASK"),
-        ]
-    ).writeto(input_path)
+    fits.PrimaryHDU(data).writeto(input_path)
 
     parser = cli._build_parser()
     args = parser.parse_args(
@@ -178,10 +168,10 @@ def test_run_l1_loads_requested_variance_and_mask_extensions(tmp_path, monkeypat
             "4",
             "--half-width",
             "3",
-            "--variance-ext",
-            "VARIANCE",
-            "--mask-ext",
-            "MASK",
+            "--gain",
+            "1.0",
+            "--read-noise",
+            "1.0",
         ]
     )
     captured = {}

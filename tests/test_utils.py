@@ -73,7 +73,7 @@ def test_ensure_variance_uses_bias_subtracted_signal_for_poisson_term():
 def test_ensure_variance_requires_complete_noise_model():
     ccd = CCDData(np.ones((2, 2)), unit=u.adu)
 
-    with pytest.raises(ValueError, match="provide --variance-ext or both --gain and --read-noise"):
+    with pytest.raises(ValueError, match="provide both --gain and --read-noise"):
         ensure_variance(ccd, gain=1.0, read_noise=None)
 
 

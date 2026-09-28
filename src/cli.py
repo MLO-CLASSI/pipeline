@@ -69,16 +69,6 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Science-image FITS extension name or index (default: 0)",
     )
     l1.add_argument(
-        "--variance-ext",
-        type=_extension,
-        help="Variance-plane FITS extension name or index",
-    )
-    l1.add_argument(
-        "--mask-ext",
-        type=_extension,
-        help="Boolean/bad-pixel mask FITS extension name or index",
-    )
-    l1.add_argument(
         "--unit",
         default="adu",
         help="Science-image unit if BUNIT is absent or should be overridden",
@@ -112,16 +102,16 @@ def _build_parser() -> argparse.ArgumentParser:
 
     _add_geometry_arguments(l1)
 
-    noise = l1.add_argument_group("variance fallback")
+    noise = l1.add_argument_group("variance model")
     noise.add_argument(
         "--gain",
         type=float,
-        help="Detector gain in e-/ADU when no variance extension is supplied",
+        help="Detector gain in e-/ADU for the variance model",
     )
     noise.add_argument(
         "--read-noise",
         type=float,
-        help="Read noise in e- when no variance extension is supplied",
+        help="Read noise in e- for the variance model",
     )
     l1.add_argument(
         "--rebin",
@@ -208,7 +198,7 @@ def _run_l1(args: argparse.Namespace) -> None:
     if args.plot:
         with fits.open(args.output) as hdul:
             for hdu in hdul[1:]:
-                plt.plot(hdu.data["PIXEL"], hdu.data["COUNTS"], lw=0.7)
+                plt.plot(hdu.data["PIXEL"], hdu.data["COUNTS"], lw=0.6)
         plt.gca().invert_xaxis()
         plt.xlabel("Pixel coordinate")
         plt.ylabel("Counts")

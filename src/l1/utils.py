@@ -32,15 +32,15 @@ def ensure_variance(
 
     When a master bias is available, remove its pedestal before estimating the
     Poisson term. The master calibration image's own uncertainty is not yet
-    included in this fallback model.
+    included in this variance model.
     """
     if ccd.uncertainty is not None:
         return ccd
 
     if gain is None or read_noise is None:
         raise ValueError(
-            "optimal extraction requires a variance estimate: provide "
-            "--variance-ext or both --gain and --read-noise"
+            "L1 extraction requires a variance estimate: provide both "
+            "--gain and --read-noise"
         )
 
     result = ccd.copy()
