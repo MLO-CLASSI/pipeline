@@ -15,7 +15,9 @@ dependencies = [
     "astropy",
     "ccdproc",
     "numpy",
+    "scipy>=1.14",
     "specreduce",
+    "synphot>=1.6",
 ]
 
 [project.optional-dependencies]
@@ -28,7 +30,7 @@ test = [
 classi-pipeline = "pipeline.cli:main"
 
 [tool.setuptools]
-packages = ["pipeline", "pipeline.l1", "pipeline.l2"]
+packages = ["pipeline", "pipeline.l1", "pipeline.l2", "pipeline.l3"]
 package-dir = {pipeline = "src"}
 
 [tool.pytest.ini_options]

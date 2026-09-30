@@ -48,6 +48,28 @@ The L2 function is stubbed out in the framework but is not implemented yet.
 A future L2 table can retain `PIXEL` for provenance while adding a physical
 `WAVELENGTH` coordinate and calibrated `FLUX`/uncertainty columns.
 
+### L3 - target photometric anchoring
+
+L3 is reserved for target-specific calibration that uses external observations
+rather than instrument calibration data. The initial L3 implementation provides
+a broadband photometric anchoring model for an already wavelength- and
+flux-calibrated spectrum. It fits a positive multiplicative correction
+
+```text
+C(lambda) = exp(a0 + a1 log(lambda/lambda_ref) + a2 log(lambda/lambda_ref)^2)
+```
+
+against synthetic photometry through the full filter bandpasses. One band fits
+a gray scale factor, two bands fit scale plus color, and three or more bands fit
+up to quadratic curvature by default. This is intended for nearly simultaneous
+CLASSI target photometry, typically B/V/R. The built-in aliases use Johnson B,
+Johnson V, and Cousins R; arbitrary `synphot` bandpasses can also be supplied.
+
+The L3 numerical machinery is implemented independently of FITS I/O for now,
+because the L2 file format is not yet defined. The fitted coefficient covariance
+is retained separately from the per-pixel statistical uncertainty because the
+photometric-calibration error is correlated across wavelength.
+
 ## Current L1 assumptions
 
 - Dispersion is along array axis 1 (horizontal/X).
