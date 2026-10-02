@@ -48,6 +48,56 @@ The L2 function is stubbed out in the framework but is not implemented yet.
 A future L2 table can retain `PIXEL` for provenance while adding a physical
 `WAVELENGTH` coordinate and calibrated `FLUX`/uncertainty columns.
 
+#### Baseline wavelength solution
+
+The baseline wavelength calibration is a versioned ASDF reference product
+derived from arc-lamp exposures. One file contains the solutions for all fiber
+traces. The actual pixel-to-wavelength transforms are stored as GWCS objects,
+using the same lossless representation used by `specreduce`'s
+`WavelengthSolution1D` rather than a CLASSI-specific coefficient encoding.
+CLASSI's wrapper adds only multi-trace organization, arc-line diagnostics, and
+provenance.
+
+The top-level `classi_wavesol` tree records the format/version, wavelength unit
+and medium, native pixel-coordinate convention, arc exposure and lamps, and a
+list of traces. Each trace contains:
+
+- a `wavelength_solution` node with the GWCS transform and its native pixel
+  bounding box;
+- the matched arc-line pixel positions and reference wavelengths;
+- residuals and the used/rejected flag for each line;
+- line identifiers and RMS fit diagnostics.
+
+Pixel coordinates are always native zero-based detector coordinates. This
+remains true when an L1 spectrum has been rebinned, because its `PIXEL` column
+retains native-detector coordinates. Internal wavelengths should normally be
+vacuum wavelengths; the ASDF metadata records the medium explicitly.
+
+`pipeline.l2.fit_arc_wavelength_solution()` uses
+`specreduce.wavecal1d.WavelengthCalibration1D.fit_lines()` for the arc fit.
+`write_wavesol()` and `read_wavesol()` handle the CLASSI multi-trace ASDF
+container. The final L2 science product can remain FITS; the ASDF file is the
+long-lived calibration/reference object.
+
+#### Sky-line refinement
+
+The arc solution defines the detailed dispersion relation. For an individual
+science exposure, L2 can refine it by fitting an affine detector-coordinate
+transform to measured night-sky line centroids:
+
+```text
+x_master = REFPIX + dx + scale * (x_science - REFPIX)
+lambda_science(x) = lambda_master(x_master)
+```
+
+`pipeline.l2.fit_sky_refinement()` implements this fit. With one usable sky
+line, `mode="auto"` fits only `dx`; with two or more it fits both `dx` and the
+stretch `scale`. The resulting transform is composed exactly with the master
+polynomial rather than refitting its higher-order shape. Automatic selection
+and centroiding of sky lines is intentionally kept as a separate L2 step so
+the pipeline can choose the cleanest available sky spectrum before fitting the
+refinement.
+
 ### L3 - target photometric anchoring
 
 L3 is reserved for target-specific calibration that uses external observations
