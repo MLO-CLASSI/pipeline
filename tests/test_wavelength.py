@@ -168,6 +168,15 @@ def test_sky_shift_refinement_recovers_pixel_offset():
     np.testing.assert_allclose(refinement.master_pixel(observed_pixels), master_pixels, atol=1e-10)
 
 
+@pytest.mark.parametrize("master_pixel", [-1.0, 2048.0])
+def test_sky_refinement_rejects_wavelengths_outside_detector_edges(master_pixel):
+    baseline = _arc_solution().solution
+    wavelength = baseline.pix_to_wav([master_pixel]) * baseline.unit
+
+    with pytest.raises(ValueError, match="outside the baseline solution"):
+        fit_sky_refinement(baseline, [1000.0], wavelength, mode="shift")
+
+
 def test_sky_affine_refinement_recovers_shift_and_stretch():
     baseline = _arc_solution().solution
     reference = 1000.0

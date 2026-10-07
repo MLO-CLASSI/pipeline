@@ -458,7 +458,10 @@ def fit_sky_refinement(
         baseline.wav_to_pix(wavelengths.to_value(baseline.unit)),
         dtype=float,
     )
-    if not np.all(np.isfinite(master_pixels)):
+    lower_bound, upper_bound = baseline.bounds_pix
+    if not np.all(np.isfinite(master_pixels)) or np.any(
+        (master_pixels < lower_bound) | (master_pixels >= upper_bound)
+    ):
         raise ValueError("one or more sky wavelengths lie outside the baseline solution")
 
     mode = mode.lower()
