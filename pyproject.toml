@@ -17,6 +17,7 @@ dependencies = [
     "ccdproc",
     "numpy",
     "scipy>=1.14",
+    "specmangle @ git+https://github.com/cgobat/specmangle.git@main",
     "specreduce @ git+https://github.com/astropy/specreduce.git@main",
     "synphot>=1.6",
 ]
