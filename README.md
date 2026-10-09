@@ -101,24 +101,32 @@ refinement.
 ### L3 - target photometric anchoring
 
 L3 is reserved for target-specific calibration that uses external observations
-rather than instrument calibration data. The initial L3 implementation provides
-a broadband photometric anchoring model for an already wavelength- and
-flux-calibrated spectrum. It fits a positive multiplicative correction
+rather than instrument calibration data. Its numerical implementation is
+provided by `specmangle` rather than duplicated in this package. The
+`pipeline.l3` namespace re-exports `specmangle.mangle()` and the associated
+`Bandpass` and `MangleResult` classes for use by the eventual L3 I/O layer.
 
-```text
-C(lambda) = exp(a0 + a1 log(lambda/lambda_ref) + a2 log(lambda/lambda_ref)^2)
-```
+`specmangle` operates on a wavelength- and flux-calibrated `specutils.Spectrum`
+and an `astropy.table.Table` containing contemporaneous broadband photometry.
+The table uses `band` and `mag` columns, with optional `mag_err`; magnitudes are
+currently interpreted as AB magnitudes. Band names are normally SVO Filter
+Profile Service identifiers, while measured or otherwise custom CLASSI imager
+response curves can be supplied as `Bandpass` objects.
 
-against synthetic photometry through the full filter bandpasses. One band fits
-a gray scale factor, two bands fit scale plus color, and three or more bands fit
-up to quadratic curvature by default. This is intended for nearly simultaneous
-CLASSI target photometry, typically B/V/R. The built-in aliases use Johnson B,
-Johnson V, and Cousins R; arbitrary `synphot` bandpasses can also be supplied.
+The mangling correction is positive and multiplicative. It is represented by a
+natural cubic spline in log wavelength and log flux scale, with one free anchor
+at the pivot wavelength of each usable unique passband. The correction is held
+constant outside the bluest and reddest anchors. By default, passbands for
+which less than 98% of the AB-reference signal is covered by the spectrum are
+excluded
+rather than extrapolated.
 
-The L3 numerical machinery is implemented independently of FITS I/O for now,
-because the L2 file format is not yet defined. The fitted coefficient covariance
-is retained separately from the per-pixel statistical uncertainty because the
-photometric-calibration error is correlated across wavelength.
+The returned `MangleResult` contains the corrected spectrum, the correction
+itself, photometric residual diagnostics, and the fitted parameter covariance.
+The input spectrum's statistical uncertainty is scaled with the correction;
+uncertainty in the mangling function is retained separately because it is
+correlated across wavelength. Pipeline-specific L3 FITS I/O remains to be added
+once the L2 product format is defined.
 
 ## Current L1 assumptions
 
